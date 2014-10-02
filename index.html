@@ -36,7 +36,7 @@
     <!-- Jquery hosted by google -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script> 
     <!-- ArcGIS Javascript API reference -->
-	<script src="http://js.arcgis.com/3.10/"></script>
+	<script src="http://js.arcgis.com/3.8/"></script>
     <!-- Mapper js file -->
     <script src="js/STN_JS.js" type="text/javascript"></script>  
      
@@ -58,32 +58,33 @@
     
 <body class="claro">
 
-    <!--<div id="loadingScreen" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'sidebar', gutters:true, liveSplitters:true, region: 'center'">
+    <div id="loadingScreen" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'sidebar', gutters:true, liveSplitters:true, region: 'center'">
         <img id='loadingScreenGraphic' src='images/LoadingOrange110.gif' alt='Loading Graphic'>
-    </div>-->
+    </div>
 
 	<div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false" style="width:100%;height:100%;margin:0;">
         <div data-dojo-type="dijit/layout/ContentPane" id="rightPane" data-dojo-props="region:'right'">
             <div id="userTools">
                 <div id="filterBox" data-dojo-type="wim/CollapsingContainer" data-dojo-props="title:'SENSOR FILTER', startCollapsed:true">
                     <label> Event </label>
-                    </br><select id="eventSelectInput" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width:260px;font-size:12px;" name="'event'" value="'All'" searchAttr="eventName" autoComplete="true" ignoreCase="true" onChange="updateSensorsLayer" fetchProperties="{sort:[{attribute:'event', descending:false}]}" ></select>
+                    <br><input id="eventSelector">
                     <br /><label>State</label>
-                    </br><select id="stateSelectInput" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width:260px;font-size:12px;" name="'state'" value="'All'" searchAttr="stateOption" autoComplete="true" ignoreCase="true" onChange="updateSensorsLayer" fetchProperties="{sort:[{attribute:'state', descending:false}]}" ></select>
+                    <br><input id="stateSelector">
                     <br/><label>County</label>
-                    </br><select id="countySelectInput" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width:260px;font-size:12px;" name="'county'" value="'All'" searchAttr="countyOption" autoComplete="true" ignoreCase="true" onChange="updateSensorsLayer" fetchProperties="{sort:[{attribute:'county', descending:false}]}" ></select>
+                    <br><input id="countySelector">
                     <br /><label>Sensor Status</label>
-                    </br><select id="statusSelectInput" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width:260px;font-size:12px;" name="'status'" value="'All'" searchAttr="statusOption" autoComplete="true" ignoreCase="true" onChange="updateSensorsLayer" fetchProperties="{sort:[{attribute:'status', descending:false}]}" ></select>
+                    <br><input id="statusSelector">
                     <br /><label>Data Type</label>
-                    </br><select id="deploymentSelectInput" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width:260px;font-size:12px;" name="'deployment'" value="'All'" searchAttr="deploymentOption" autoComplete="true" onChange="updateSensorsLayer" ignoreCase="true" fetchProperties="{sort:[{attribute:'deployment', descending:false}]}" ></select>
+                    <br><input id="deploymentSelector">
                     <br /><label>Sensor Type</label>
-                    </br><select id="sensorSelectInput" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width:260px;font-size:12px;" name="'sensor'" value="'All'" searchAttr="sensorOption" autoComplete="true" ignoreCase="true" onChange="updateSensorsLayer" fetchProperties="{sort:[{attribute:'sensor', descending:false}]}" ></select>
+                    <br><input id="sensorSelector">
+                    <!--</br><select id="sensorSelectInput" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width:260px;font-size:12px;" name="'sensor'" value="'All'" searchAttr="sensorOption" autoComplete="true" ignoreCase="true" onChange="updateSensorsLayer" fetchProperties="{sort:[{attribute:'sensor', descending:false}]}" ></select>-->
                     
-                    </br><label>Date Range</label>
-                    </br><label for="fromDate">From: </label><input id="fromDate" type="text" name="fromDate" style="width:85px;font-size:12px;" data-dojo-type="dijit/form/DateTextBox"  required="false" onChange="updateSensorsLayer" />
+                    <br><label>Date Range</label>
+                    <br><label for="fromDate">From: </label><input id="fromDate" type="text" name="fromDate" style="width:85px;font-size:12px;" data-dojo-type="dijit/form/DateTextBox"  required="false" onChange="updateSensorsLayer" />
                     <label for="toDate">To: </label><input id="toDate" type="text" name="toDate" style="width:85px;font-size:12px;" data-dojo-type="dijit/form/DateTextBox"  required="false" onChange="updateSensorsLayer" />
                     
-                    </br><div id="submitButtonDiv">
+                    <br><div id="submitButtonDiv">
                             <button id="submitButton" type="button" class="submitButton">Submit</button>
                             <button id="clearButton" type="button" class="clearButton">Clear Selection</button>
                     </div>
@@ -92,13 +93,13 @@
 
                 <div id="hwmFilterBox" data-dojo-type="wim/CollapsingContainer" data-dojo-props="title:'HIGH-WATER MARK FILTER', startCollapsed:true">
                     <label> Event </label>
-                    </br><select id="hwmEventSelectInput" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width:260px;font-size:12px;" name="'event'" value="'All'" searchAttr="eventName" autoComplete="true" ignoreCase="true" onChange="filterHWMs()" fetchProperties="{sort:[{attribute:'event', descending:false}]}" ></select>
+                    <br><input id="hwmEventSelector">
                     <br /><label>State</label>
-                    </br><select id="hwmStateSelectInput" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width:260px;font-size:12px;" name="'state'" value="'All'" searchAttr="stateOption" autoComplete="true" ignoreCase="true" onChange="filterHWMs()" fetchProperties="{sort:[{attribute:'state', descending:false}]}" ></select>
+                    <br><input id="hwmStateSelector">
                     <br/><label>County</label>
-                    </br><select id="hwmCountySelectInput" data-dojo-type="dijit/form/FilteringSelect" required="false" style="width:260px;font-size:12px;" name="'county'" value="'All'" searchAttr="countyOption" autoComplete="true" ignoreCase="true" onChange="filterHWMs()" fetchProperties="{sort:[{attribute:'county', descending:false}]}" ></select>
+                    <br><input id="hwmCountySelector">
                     
-                    </br><div id="hwmSubmitButtonDiv">
+                    <br><div id="hwmSubmitButtonDiv">
                             <button id="hwmSubmitButton" class="submitButton" type="button" >Submit</button>
                             <button id="hwmClearButton" class="clearButton" type="button" >Clear Selection</button>
                     </div>
@@ -154,7 +155,7 @@
             
             <div data-dojo-type="dijit/Dialog" id="createDialog" title="Create New STN Site" style="display: none">
                 <div class="createDialogContentArea">
-                    <div id="createDialogCoordinates"/></br>
+                    <div id="createDialogCoordinates"></div><br>
                		<!--<div id="createDialogText">Would you like to create a new site at this location?</div>-->
                 </div>
                 <div class="createDialogActionBar">

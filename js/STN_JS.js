@@ -19,11 +19,10 @@ var filterDefinition = [];
 var lat, lng;
 var siteClickURL;
 var mapServicesRoot;
+var eventList, stateList, countyList, statusList, deploymentList, sensorList, hwmEventList, hwmStateList, hwmCountyList;
 
 require([
 	"esri/map",
-    "esri/tasks/query",
-    "esri/tasks/QueryTask",
     "dojo/dom",
     "dojo/on",
     "dojo/_base/Color",
@@ -58,13 +57,9 @@ require([
     "dijit/form/RadioButton",
     "dojo/query",
     "dojo/parser",
-    "dojo/ready",
-    "dojo/data/ItemFileReadStore",
-    "dojo/domReady!"
+    "dojo/ready"
 ], function(
   Map,
-  Query,
-  QueryTask,
   dom,
   on,
   Color,
@@ -99,8 +94,7 @@ require([
   RadioButton,
   query,
   parser,
-  ready,
-  ItemFileReadStore
+  ready
 ) {
 
 	allLayers = STNLayers;
@@ -139,29 +133,27 @@ require([
     hwmFilterLyr = new ArcGISDynamicMapServiceLayer(mapServicesRoot + "/HWMs_forFilter/MapServer", {"visible":false });
     hwmFilterLyr.setDisableClientCaching(true);
 
-
     nwisFeatureLyr = new FeatureLayer(mapServicesRoot + "/STN_nwis_rt/MapServer/0", { mode: FeatureLayer.MODE_ONDEMAND, opacity: 0, minScale: 1155582, visible: false, outFields: ["*"]});
 
-	///////begin existing dropdown populate code
-	var eventList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/3", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
+	eventList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/3", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
 
-	var statusList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/2", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
+	stateList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/6", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
 
-	var deploymentList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/4", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
+	countyList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/7", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
 
-	var sensorList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/5", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
+	statusList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/2", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
 
-	var stateList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/6", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
+	deploymentList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/4", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
 
-	var countyList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/7", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
+	sensorList = new FeatureLayer(mapServicesRoot + "/Sensors/MapServer/5", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
 
 	///////
 
-	var hwmEventList = new FeatureLayer(mapServicesRoot + "/HWMs_forFilter/MapServer/2", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
+	hwmEventList = new FeatureLayer(mapServicesRoot + "/HWMs_forFilter/MapServer/2", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
 
-	var hwmStateList = new FeatureLayer(mapServicesRoot + "/HWMs_forFilter/MapServer/3", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
+	hwmStateList = new FeatureLayer(mapServicesRoot + "/HWMs_forFilter/MapServer/3", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
 
-	var hwmCountyList = new FeatureLayer(mapServicesRoot + "/HWMs_forFilter/MapServer/4", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
+	hwmCountyList = new FeatureLayer(mapServicesRoot + "/HWMs_forFilter/MapServer/4", { mode: FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
 
    var coneTrack = new WMSLayerInfo({
    		name: 'probConeLyr',
@@ -185,227 +177,6 @@ require([
    });
 
    //map.addLayers([noaaConeTrackLyr, nwisFeatureLyr]);
-   //////end testing code
-
-	////begin code for single dropdown based on list from table in service
-	var eventQuery = new Query();
-	eventQuery.where = "EVENT_NAME IS NOT null";
-	eventList.queryFeatures(eventQuery, function(featureSet) {
-          var eventFilterValues = array.map(featureSet.features, function(feature) {
-            return {
-              eventName: feature.attributes.EVENT_NAME
-            };
-          });
-		  
-		  eventFilterValues.unshift( new Object ({eventName: " All"}));
-		  
-		  var eventDataItems = {
-		  	identifier: 'eventName',
-			label: 'eventName',
-			items: eventFilterValues
-		  };
-		   
-		  var eventStore = new ItemFileReadStore({
-		  	data: eventDataItems
-		  });
-		  
-		  domAttr.set(registry.byId("eventSelectInput"), "store", eventStore);
-	}); 
-
-	var stateQuery = new Query();
-	stateQuery.where = "STATE IS NOT null";
-	stateList.queryFeatures(stateQuery, function(featureSet) {
-          var stateFilterValues = array.map(featureSet.features, function(feature) {
-            return {
-              stateOption: feature.attributes.STATE
-            };
-          });
-		  
-		  stateFilterValues.unshift( new Object ({stateOption: " All"}));
-		  
-		  var stateDataItems = {
-		  	identifier: 'stateOption',
-			label: 'stateOption',
-			items: stateFilterValues
-		  };
-		   
-		  var stateStore = new ItemFileReadStore({
-		  	data: stateDataItems
-		  });
-		  
-		  domAttr.set(registry.byId("stateSelectInput"), "store", stateStore);
-	}); 
-
-	var countyQuery = new Query();
-	countyQuery.where = "COUNTY IS NOT null";
-	countyList.queryFeatures(countyQuery, function(featureSet) {
-          var countyFilterValues = array.map(featureSet.features, function(feature) {
-            return {
-              countyOption: feature.attributes.COUNTY
-            };
-          });
-		  
-		  countyFilterValues.unshift( new Object ({countyOption: " All"}));
-		  
-		  var countyDataItems = {
-		  	identifier: 'countyOption',
-			label: 'countyOption',
-			items: countyFilterValues
-		  };
-		   
-		  var countyStore = new ItemFileReadStore({
-		  	data: countyDataItems
-		  });
-		  
-		  domAttr.set(registry.byId("countySelectInput"), "store", countyStore);
-	}); 
-
-	var statusQuery = new Query();
-	statusQuery.where = "STATUS IS NOT null";
-	statusList.queryFeatures(statusQuery, function(featureSet) {
-          var statusFilterValues = array.map(featureSet.features, function(feature) {
-            return {
-              statusOption: feature.attributes.STATUS
-            };
-          });
-		  
-		  statusFilterValues.unshift( new Object ({statusOption: " All"}));
-		  
-		  var statusDataItems = {
-		  	identifier: 'statusOption',
-			label: 'statusOption',
-			items: statusFilterValues
-		  };
-		   
-		  var statusStore = new ItemFileReadStore({
-		  	data: statusDataItems
-		  });
-		  
-		  domAttr.set(registry.byId("statusSelectInput"), "store", statusStore);
-	}); 
-
-	var deploymentQuery = new Query();
-	deploymentQuery.where = "METHOD IS NOT null";
-	deploymentList.queryFeatures(deploymentQuery, function(featureSet) {
-          var deploymentFilterValues = array.map(featureSet.features, function(feature) {
-            return {
-              deploymentOption: feature.attributes.METHOD
-            };
-          });
-		  
-		  deploymentFilterValues.unshift( new Object ({deploymentOption: " All"}));
-		  
-		  var deploymentDataItems = {
-		  	identifier: 'deploymentOption',
-			label: 'deploymentOption',
-			items: deploymentFilterValues
-		  };
-		   
-		  var deploymentStore = new ItemFileReadStore({
-		  	data: deploymentDataItems
-		  });
-		  
-		  domAttr.set(registry.byId("deploymentSelectInput"), "store", deploymentStore);
-	});
-
-	var sensorQuery = new Query();
-	sensorQuery.where = "SENSOR IS NOT null";
-	sensorList.queryFeatures(sensorQuery, function(featureSet) {
-          var sensorFilterValues = array.map(featureSet.features, function(feature) {
-            return {
-              sensorOption: feature.attributes.SENSOR
-            };
-          });
-		  
-		  sensorFilterValues.unshift( new Object ({sensorOption: " All"}));
-		  
-		  var sensorDataItems = {
-		  	identifier: 'sensorOption',
-			label: 'sensorOption',
-			items: sensorFilterValues
-		  };
-		   
-		  var sensorStore = new ItemFileReadStore({
-		  	data: sensorDataItems
-		  });
-		  
-		  domAttr.set(registry.byId("sensorSelectInput"), "store", sensorStore);
-	}); 
-
-	var hwmEventQuery = new Query();
-	hwmEventQuery.where = "EVENT_NAME IS NOT null";
-	hwmEventList.queryFeatures(eventQuery, function(featureSet) {
-          var hwmEventFilterValues = array.map(featureSet.features, function(feature) {
-            return {
-              eventName: feature.attributes.EVENT_NAME
-            };
-          });
-		  
-		  hwmEventFilterValues.unshift( new Object ({eventName: " All"}));
-		  
-		  var hwmEventDataItems = {
-		  	identifier: 'eventName',
-			label: 'eventName',
-			items: hwmEventFilterValues
-		  };
-		   
-		  var hwmEventStore = new ItemFileReadStore({
-		  	data: hwmEventDataItems
-		  });
-		  
-		  domAttr.set(registry.byId("hwmEventSelectInput"), "store", hwmEventStore);
-	});
-
-	var hwmStateQuery = new Query();
-	hwmStateQuery.where = "STATE IS NOT null";
-	hwmStateList.queryFeatures(stateQuery, function(featureSet) {
-          var hwmStateFilterValues = array.map(featureSet.features, function(feature) {
-            return {
-              stateOption: feature.attributes.STATE
-            };
-          });
-		  
-		  hwmStateFilterValues.unshift( new Object ({stateOption: " All"}));
-		  
-		  var hwmStateDataItems = {
-		  	identifier: 'stateOption',
-			label: 'stateOption',
-			items: hwmStateFilterValues
-		  };
-		   
-		  var hwmStateStore = new ItemFileReadStore({
-		  	data: hwmStateDataItems
-		  });
-		  
-		  domAttr.set(registry.byId("hwmStateSelectInput"), "store", hwmStateStore);
-	}); 
-
-	var hwmCountyQuery = new Query();
-	hwmCountyQuery.where = "COUNTY IS NOT null";
-	hwmCountyList.queryFeatures(countyQuery, function(featureSet) {
-          var hwmCountyFilterValues = array.map(featureSet.features, function(feature) {
-            return {
-              countyOption: feature.attributes.COUNTY
-            };
-          });
-		  
-		  hwmCountyFilterValues.unshift( new Object ({countyOption: " All"}));
-		  
-		  var hwmCountyDataItems = {
-		  	identifier: 'countyOption',
-			label: 'countyOption',
-			items: hwmCountyFilterValues
-		  };
-		   
-		  var hwmCountyStore = new ItemFileReadStore({
-		  	data: hwmCountyDataItems
-		  });
-		  
-		  domAttr.set(registry.byId("hwmCountySelectInput"), "store", hwmCountyStore);
-	}); 
-
-	
-
 
 	on(map, "layers-add-result", function(){
 
@@ -616,8 +387,6 @@ require([
     locator = new Locator("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer");
     on(locator, "address-to-locations-complete", showResults);
 
-
-
 	//begin showSiteResults function for siteid params
 	function showSiteResults(featureSet){
 			//remove all graphics on the maps graphics layer
@@ -634,7 +403,6 @@ require([
 	}
 	//end showSiteResults function for siteid params
 
-	//begin updateSensorsLayer function
 	function updateSensorsLayer(){
 
 		var fromDateObject, toDateObject;
@@ -662,38 +430,38 @@ require([
 			filterDefinition.push("EVENT_END_DATE LIKE '%'");
 		}
 
-		if (!(registry.byId("eventSelectInput").value == " All" || registry.byId("eventSelectInput").value === "")) {
-			filterDefinition.push("EVENT_NAME LIKE '" +  registry.byId("eventSelectInput").value + "'");
+		if (!(registry.byId("eventSelector").value == "All" || registry.byId("eventSelector").value === "")) {
+			filterDefinition.push("EVENT_NAME LIKE '" +  registry.byId("eventSelector").value + "'");
 		} else {
 			filterDefinition.push("EVENT_NAME LIKE '%'");
 		}
 
-		if (!(registry.byId("stateSelectInput").value == " All" || registry.byId("stateSelectInput").value === "")) {
-			filterDefinition.push("STATE LIKE '" +  registry.byId("stateSelectInput").value + "'");
+		if (!(registry.byId("stateSelector").value == "All" || registry.byId("stateSelector").value === "")) {
+			filterDefinition.push("STATE LIKE '" +  registry.byId("stateSelector").value + "'");
 		} else {
 			filterDefinition.push("STATE LIKE '%'");
 		}
 
-		if (!(registry.byId("countySelectInput").value == " All" || registry.byId("countySelectInput").value === "")) {
-			filterDefinition.push("COUNTY LIKE '" +  registry.byId("countySelectInput").value + "'");
+		if (!(registry.byId("countySelector").value == "All" || registry.byId("countySelector").value === "")) {
+			filterDefinition.push("COUNTY LIKE '" +  registry.byId("countySelector").value + "'");
 		} else {
 			filterDefinition.push("COUNTY LIKE '%'");
 		}
 
-		if (!(registry.byId("deploymentSelectInput").value == " All" || registry.byId("deploymentSelectInput").value === "")) {
-			filterDefinition.push("METHOD LIKE '" +  registry.byId("deploymentSelectInput").value + "'");
+		if (!(registry.byId("deploymentSelector").value == "All" || registry.byId("deploymentSelector").value === "")) {
+			filterDefinition.push("METHOD LIKE '" +  registry.byId("deploymentSelector").value + "'");
 		} else {
 			filterDefinition.push("METHOD LIKE '%'");
 		}
 
-		if (!(registry.byId("sensorSelectInput").value == " All" || registry.byId("sensorSelectInput").value === "")) {
-			filterDefinition.push("SENSOR LIKE '" +  registry.byId("sensorSelectInput").value + "'");
+		if (!(registry.byId("sensorSelector").value == "All" || registry.byId("sensorSelector").value === "")) {
+			filterDefinition.push("SENSOR LIKE '" +  registry.byId("sensorSelector").value + "'");
 		} else {
 			filterDefinition.push("SENSOR LIKE '%'");
 		}
 
-		if (!(registry.byId("statusSelectInput").value == " All" || registry.byId("statusSelectInput").value === "")) {
-			filterDefinition.push("STATUS LIKE '" +  registry.byId("statusSelectInput").value + "'");
+		if (!(registry.byId("statusSelector").value == "All" || registry.byId("statusSelector").value === "")) {
+			filterDefinition.push("STATUS LIKE '" +  registry.byId("statusSelector").value + "'");
 		} else {
 			filterDefinition.push("STATUS LIKE '%'");
 		}
@@ -707,235 +475,505 @@ require([
 		
 		filterDefinition = ['((' + filterDefinition.join(") AND (") + '))'];
 
-		console.log(filterDefinition[0]);
-		console.log("layer definition updated");
-		
+		console.log("Filter definition:" + filterDefinition[0]);
+		console.log("layer definition updated");		
 	}
 	//end updateSensorsLayer function
 
 	//begin filterHWMs function
 	function filterHWMs(){
-		console.log("filterSensors function fired");
+		console.log("filterHWMs function fired");
 
 		filterDefinition.length = 0;
 		
-		if (!(registry.byId("hwmEventSelectInput").value == " All" || registry.byId("hwmEventSelectInput").value === "")) {
-			filterDefinition.push("EVENT_NAME LIKE '" +  registry.byId("hwmEventSelectInput").value + "'");
+		if (!(registry.byId("hwmEventSelector").value == "All" || registry.byId("hwmEventSelector").value === "")) {
+			filterDefinition.push("EVENT_NAME LIKE '" +  registry.byId("hwmEventSelector").value + "'");
 		} else {
 			filterDefinition.push("EVENT_NAME LIKE '%'");
 		}
 
-		if (!(registry.byId("hwmStateSelectInput").value == " All" || registry.byId("hwmStateSelectInput").value === "")) {
-			filterDefinition.push("STATE LIKE '" +  registry.byId("hwmStateSelectInput").value + "'");
+		if (!(registry.byId("hwmStateSelector").value == "All" || registry.byId("hwmStateSelector").value === "")) {
+			filterDefinition.push("STATE LIKE '" +  registry.byId("hwmStateSelector").value + "'");
 		} else {
 			filterDefinition.push("STATE LIKE '%'");
 		}
 
-		if (!(registry.byId("hwmCountySelectInput").value == " All" || registry.byId("hwmCountySelectInput").value === "")) {
-			filterDefinition.push("COUNTY LIKE '" +  registry.byId("hwmCountySelectInput").value + "'");
+		if (!(registry.byId("hwmCountySelector").value == "All" || registry.byId("hwmCountySelector").value === "")) {
+			filterDefinition.push("COUNTY LIKE '" +  registry.byId("hwmCountySelector").value + "'");
 		} else {
 			filterDefinition.push("COUNTY LIKE '%'");
 		}
 
 		filterDefinition = ['((' + filterDefinition.join(") AND (") + '))'];
 
-		console.log (filterDefinition[0]);
+		console.log ("HWM Filter Definition: " + filterDefinition[0]);
 
-		console.log("filter definition updated");
+		console.log("hwm filter definition updated");
 	}
 	//end filterHWMs function
 
-
 	function displayFilterCount () {
 		console.log("displayFilterCount function fired");
-		
 		domAttr.set("filterCountText", {innerHTML:"Your site selection returned " + filterCount + " results."});
-		
 		dom.byId("filterCountIndicator").style.visibility = "visible";
-
 	}
 
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	var clearSelectionsHandler = on(dom.byId("clearButton"), "click", function (){
 
 		filterDefinition.length = 0;
-
 		var blankString = '';
-
 		registry.byId("fromDate").setDisplayedValue(blankString);
 		registry.byId("toDate").setDisplayedValue(blankString);
-		registry.byId("eventSelectInput").setDisplayedValue(blankString);
-		registry.byId("stateSelectInput").setDisplayedValue(blankString);
-		registry.byId("countySelectInput").setDisplayedValue(blankString);
-		registry.byId("deploymentSelectInput").setDisplayedValue(blankString);
-		registry.byId("sensorSelectInput").setDisplayedValue(blankString);
-		registry.byId("statusSelectInput").setDisplayedValue(blankString);
-
-		registry.byId("hwmEventSelectInput").setDisplayedValue(blankString);
-		registry.byId("hwmStateSelectInput").setDisplayedValue(blankString);
-		registry.byId("hwmCountySelectInput").setDisplayedValue(blankString);
-
+		registry.byId("eventSelector").setDisplayedValue(blankString);
+		registry.byId("stateSelector").setDisplayedValue(blankString);
+		registry.byId("countySelector").setDisplayedValue(blankString);
+		registry.byId("deploymentSelector").setDisplayedValue(blankString);
+		registry.byId("sensorSelector").setDisplayedValue(blankString);
+		registry.byId("statusSelector").setDisplayedValue(blankString);
 		dom.byId("filterCountIndicator").style.visibility = "hidden";
-
 		sensorsLayer.setLayerDefinitions(filterDefinition);
 		sensorsLayer.refresh();
 		sensorsLayer.setVisibility(false);
-
 		hwmFilterLyr.setLayerDefinitions(filterDefinition);
 		hwmFilterLyr.refresh();
 		hwmFilterLyr.setVisibility(false);
-
-
-		/*////may not need this
-		for (var i = 0; i < legendLayers.length; i++) {
-			if (legendLayers[i].layer != null){
-				legendLayers[i].layer.setLayerDefinitions(filterDefinition);
-			}
-		};
-		//////end may not need this*/
 
 		var fullExtent = new Extent({"xmin":-15238485.958928764,"ymin":2101101.0335023645,"xmax":-6286181.2061713,"ymax":7350184.639900593,"spatialReference":{"wkid":102100}});
 		map.setExtent(fullExtent);
 
 	});
-
-
 
 	var clearHWMsHandler = on(dom.byId("hwmClearButton"), "click", function (){
 
 		filterDefinition.length = 0;
-
 		var blankString = '';
-
-		registry.byId("hwmEventSelectInput").setDisplayedValue(blankString);
-		registry.byId("hwmStateSelectInput").setDisplayedValue(blankString);
-		registry.byId("hwmCountySelectInput").setDisplayedValue(blankString);
-
+		registry.byId("hwmEventSelector").setDisplayedValue(blankString);
+		registry.byId("hwmStateSelector").setDisplayedValue(blankString);
+		registry.byId("hwmCountySelector").setDisplayedValue(blankString);
 		dom.byId("filterCountIndicator").style.visibility = "hidden";
-
 		hwmFilterLyr.setLayerDefinitions(filterDefinition);
 		hwmFilterLyr.refresh();
 		hwmFilterLyr.setVisibility(false);
-
-
-		/*////may not need this
-		for (var i = 0; i < legendLayers.length; i++) {
-			if (legendLayers[i].layer != null){
-				legendLayers[i].layer.setLayerDefinitions(filterDefinition);
-			}
-		};
-		//////end may not need this*/
-
 		var fullExtent = new Extent({"xmin":-15238485.958928764,"ymin":2101101.0335023645,"xmax":-6286181.2061713,"ymax":7350184.639900593,"spatialReference":{"wkid":102100}});
 		map.setExtent(fullExtent);
-
 	});
 
-	//begin executeSensorFilter function 
-	var executeFilterHandler = on(dom.byId("submitButton"), "click", function(){ 
+	require([
+	  "esri/tasks/query",
+	  "esri/tasks/QueryTask",
+	  "dojo/data/ItemFileReadStore",
+	  "dojo/store/Memory",
+	  "dijit/form/FilteringSelect",
+	  "dojo/domReady!"
+	], function(
+	  Query,
+	  QueryTask,
+	  ItemFileReadStore,
+	  Memory,
+	  FilteringSelect
+	) {
 
-		sensorsLayer.setDisableClientCaching(true);
-		sensorsLayer.setLayerDefinitions(filterDefinition);
-		sensorsLayer.refresh();
-		sensorsLayer.setVisibility(true);
 		
-		selectionQueryTask = new QueryTask(mapServicesRoot + "/Sensors/MapServer/0");
-		selectionQuery = new Query();
 
-		selectionQuery.returnGeometry = true;
-		selectionQuery.where = filterDefinition[0];
-
-		selectionQueryTask.execute(selectionQuery,onQueryComplete);
-
-		function onQueryComplete (results){
-
-			var selectionExtent = new graphicsUtils.graphicsExtent(results.features);
-
-			if (results.features.length > 1){
-				map.setExtent(selectionExtent, true);
-			} else {
-				//Zoom to the location of the single returned feature's geometry
-				var singleSiteGraphic = results.features[0];
-				var location = new Point(singleSiteGraphic.geometry.x, singleSiteGraphic.geometry.y, map.spatialReference);
-				map.centerAndZoom(location, 15);
-			}
-		}
-			
-		noRecordsQueryTask = new QueryTask(mapServicesRoot + "/Sensors/MapServer/0");
-		noRecordsQuery = new Query();
 		
-		noRecordsQuery.where = filterDefinition[0];
 
-		if (filterDefinition[0] !== "") {
-		noRecordsQueryTask.executeForCount(noRecordsQuery, function (count){ 
-			//alert("Your filter selection returned " + count + " sites.");
-			filterCount = count;
-			console.log(count);
-			
-			displayFilterCount();
+		////begin code for single dropdown based on list from table in service//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		var eventFilterValues;
+		var eventStore;
+		var eventQuery = new Query();
+		eventQuery.where = "EVENT_NAME IS NOT null";
+		eventList.queryFeatures(eventQuery, function(featureSet) {
+	       eventFilterValues = array.map(featureSet.features, function(feature) {
+		        return {
+		           id: feature.attributes.EVENT_NAME,
+		           eventName: feature.attributes.EVENT_NAME
+		        };
+	        });
+		    eventFilterValues.unshift( new Object ({id: "All", eventName: "All"}));	  
+			eventStore = new Memory({data: eventFilterValues});
+			var eventSelectInput = new FilteringSelect({
+			  	id: "eventSelector",
+			  	name: "event",
+			  	//value: "All",  //this property defines the deafult display on load. the problem is, if someone picks "All", there submit fails because there was no change to the value.
+			  	store: eventStore,
+			  	required: false,
+			  	ignoreCase: true,
+			  	fetchProperties: {sort:[{attribute:'eventName', descending:false}]},
+			  	searchAttr: "eventName",
+			  	onChange: function() {
+			  		updateSensorsLayer();
+			  	}	
+			}, "eventSelector");
+			eventSelectInput.startup();
+		}); 
+
+		var stateFilterValues;
+		var stateStore;
+		var stateQuery = new Query();
+		stateQuery.where = "STATE IS NOT null";
+		stateList.queryFeatures(stateQuery, function(featureSet) {
+	        stateFilterValues = array.map(featureSet.features, function(feature) {
+		        return {
+		          id: feature.attributes.STATE,
+		          stateName: feature.attributes.STATE
+		        };
+	        });
+			stateFilterValues.unshift( new Object ({id: "All", stateName: "All"}));
+			stateStore = new Memory({data: stateFilterValues});
+		    var stateSelectInput = new FilteringSelect({
+			  	id: "stateSelector",
+			  	name: "state",
+			  	store: stateStore,
+			  	required: false,
+			  	ignoreCase: true,
+			  	fetchProperties: {sort:[{attribute:'stateName', descending:false}]},
+			  	searchAttr: "stateName",
+			  	onChange: function (){
+			  		updateSensorsLayer();
+			  	}	
+		   }, "stateSelector");
+		   stateSelectInput.startup();
+		}); 
+
+		var countyQuery = new Query();
+		var countyStore;
+		countyQuery.where = "COUNTY IS NOT null";
+		countyList.queryFeatures(countyQuery, function(featureSet) {
+		    var countyFilterValues = array.map(featureSet.features, function(feature) {
+		        return {
+			        id: feature.attributes.COUNTY,	
+			        countyName: feature.attributes.COUNTY
+		        };
+		    });
+		    countyFilterValues.unshift( new Object ({id: "All", countyName: "All"}));
+		    countyStore = new Memory({data: countyFilterValues});
+			var countySelectInput = new FilteringSelect({
+			  	id: "countySelector",
+			  	name: "county",
+			  	store: countyStore,
+			  	required: false,
+			  	ignoreCase: true,
+			  	fetchProperties: {sort:[{attribute:'countyName', descending:false}]},
+			  	searchAttr: "countyName",
+			  	onChange: function (){
+			  		updateSensorsLayer();
+			  	}	
+	   	    }, "countySelector");
+	        countySelectInput.startup();
+		}); 
+
+		var statusQuery = new Query();
+		var statusStore;
+		statusQuery.where = "STATUS IS NOT null";
+		statusList.queryFeatures(statusQuery, function(featureSet) {
+	        var statusFilterValues = array.map(featureSet.features, function(feature) {
+	            return {
+		            id: feature.attributes.STATUS,
+		            statusName: feature.attributes.STATUS
+	            };
+	        });
+			statusFilterValues.unshift( new Object ({id: "All", statusName: "All"}));
+			statusStore = new Memory({data: statusFilterValues});
+			var statusSelectInput = new FilteringSelect({
+			  	id: "statusSelector",
+			  	name: "status",
+			  	store: statusStore,
+			  	required: false,
+			  	ignoreCase: true,
+			  	fetchProperties: {sort:[{attribute:'statusName', descending:false}]},
+			  	searchAttr: "statusName",
+			  	onChange: function (){
+			  		updateSensorsLayer();
+			  	}	
+	   	    }, "statusSelector");
+	        statusSelectInput.startup();
+		}); 
+
+		var deploymentQuery = new Query();
+		var deploymentStore;
+		deploymentQuery.where = "METHOD IS NOT null";
+		deploymentList.queryFeatures(deploymentQuery, function(featureSet) {
+            var deploymentFilterValues = array.map(featureSet.features, function(feature) {
+	            return {
+	            	id: feature.attributes.METHOD,
+		            deploymentName: feature.attributes.METHOD
+	            };
+            });
+			deploymentFilterValues.unshift( new Object ({id: "All", deploymentName: "All"}));
+			deploymentStore = new Memory({data: deploymentFilterValues});
+			var deploymentSelectInput = new FilteringSelect({
+			  	id: "deploymentSelector",
+			  	name: "deployment",
+			  	store: deploymentStore,
+			  	required: false,
+			  	ignoreCase: true,
+			  	fetchProperties: {sort:[{attribute:'deploymentName', descending:false}]},
+			  	searchAttr: "deploymentName",
+			  	onChange: function (){
+			  		updateSensorsLayer();
+			  	}	
+	   	    }, "deploymentSelector");
+	        deploymentSelectInput.startup();
 		});
-		
-		}
-		console.log("layer definition updated, executed, and extent refreshed");
-	});
-	//end executeSensorFilter function
 
-	//begin executeHWMFilter function
-	var executeHWMFilterHandler = on(dom.byId("hwmSubmitButton"), "click", function () {
+		var sensorQuery = new Query();
+		var sensorStore;
+		sensorQuery.where = "SENSOR IS NOT null";
+		sensorList.queryFeatures(sensorQuery, function(featureSet) {
+	        var sensorFilterValues = array.map(featureSet.features, function(feature) {
+		        return {
+		        	id: feature.attributes.SENSOR,
+			        sensorName: feature.attributes.SENSOR
+		        };
+	        });
+			sensorFilterValues.unshift( new Object ({id: "All", sensorName: "All"}));
+			sensorStore = new Memory({data: sensorFilterValues});
+			var sensorSelectInput = new FilteringSelect({
+			  	id: "sensorSelector",
+			  	name: "sensor",
+			  	store: sensorStore,
+			  	required: false,
+			  	ignoreCase: true,
+			  	fetchProperties: {sort:[{attribute:'sensorName', descending:false}]},
+			  	searchAttr: "sensorName",
+			  	onChange: function (){
+			  		updateSensorsLayer();
+			  	}	
+	   	    }, "sensorSelector");
+	        sensorSelectInput.startup();
+		}); 
 
-		hwmFilterLyr.setDisableClientCaching(true);
-		hwmFilterLyr.setLayerDefinitions(filterDefinition);
-		hwmFilterLyr.refresh();
-		hwmFilterLyr.setVisibility(true);
-
-		selectionQueryTask = new QueryTask(mapServicesRoot + "/HWMs_forFilter/MapServer/0");
-		selectionQuery = new Query();
-
-		selectionQuery.returnGeometry = true;
-		selectionQuery.where = filterDefinition[0];
-
-		selectionQueryTask.execute(selectionQuery,onQueryComplete);
-
-		function onQueryComplete (results){
-
-			var selectionExtent = new graphicsUtils.graphicsExtent(results.features);
-
-			if (results.features.length > 1){
-
-				selectionExtent = selectionExtent.expand(2.3);
-				map.setExtent(selectionExtent, true);
-
-			} else {
-				//Zoom to the location of the single returned feature's geometry
-				var singleSiteGraphic = results.features[0];
-				var location = new Point(singleSiteGraphic.geometry.x, singleSiteGraphic.geometry.y, map.spatialReference);
-				map.centerAndZoom(location, 15);
-			}
-		}
-			
-		noRecordsQueryTask = new QueryTask(mapServicesRoot + "/HWMs/MapServer/0");
-		noRecordsQuery = new Query();
-		
-		noRecordsQuery.where = filterDefinition[0];
-
-		if (filterDefinition[0] !== "") {
-		noRecordsQueryTask.executeForCount(noRecordsQuery, function (count){ 
-			//alert("Your filter selection returned " + count + " sites.");
-			filterCount = count;
-			console.log(count);
-			
-			displayFilterCount();
+		var hwmEventQuery = new Query();
+		var hwmEventStore;
+		hwmEventQuery.where = "EVENT_NAME IS NOT null";
+		hwmEventList.queryFeatures(hwmEventQuery, function(featureSet) {
+	        var hwmEventFilterValues = array.map(featureSet.features, function(feature) {
+		        return {
+		        	id: feature.attributes.EVENT_NAME,
+			        hwmEventName: feature.attributes.EVENT_NAME
+		        };
+	        });
+			hwmEventFilterValues.unshift( new Object ({ id: "All", hwmEventName: "All"}));
+			hwmEventStore = new Memory({data: hwmEventFilterValues});
+			var hwmEventInput = new FilteringSelect({
+			  	id: "hwmEventSelector",
+			  	name: "hwmEvent",
+			  	store: hwmEventStore,
+			  	required: false,
+			  	ignoreCase: true,
+			  	fetchProperties: {sort:[{attribute:'hwmEventName', descending:false}]},
+			  	searchAttr: "hwmEventName",
+			  	onChange: function (){
+			  		filterHWMs();
+			  	}	
+	   	    }, "hwmEventSelector");
+	        hwmEventInput.startup();
 		});
+
+		var hwmStateQuery = new Query();
+		var hwmStateStore;
+		hwmStateQuery.where = "STATE IS NOT null";
+		hwmStateList.queryFeatures(hwmStateQuery, function(featureSet) {
+	        var hwmStateFilterValues = array.map(featureSet.features, function(feature) {
+		        return {
+		        	id: feature.attributes.STATE,
+			        hwmStateName: feature.attributes.STATE
+		        };
+	        });
+			hwmStateFilterValues.unshift( new Object ({ id: "All", hwmStateName: "All"}));
+			hwmStateStore = new Memory({data: hwmStateFilterValues});
+			var hwmStateInput = new FilteringSelect({
+			  	id: "hwmStateSelector",
+			  	name: "hwmState",
+			  	store: hwmStateStore,
+			  	required: false,
+			  	ignoreCase: true,
+			  	fetchProperties: {sort:[{attribute:'hwmStateName', descending:false}]},
+			  	searchAttr: "hwmStateName",
+			  	onChange: function (){
+			  		filterHWMs();
+			  	}	
+	   	    }, "hwmStateSelector");
+	        hwmStateInput.startup();
+		});
+
+		var hwmCountyQuery = new Query();
+		var hwmCountyStore;
+		hwmCountyQuery.where = "COUNTY IS NOT null";
+		hwmCountyList.queryFeatures(hwmCountyQuery, function(featureSet) {
+	        var hwmCountyFilterValues = array.map(featureSet.features, function(feature) {
+		        return {
+		        	id: feature.attributes.COUNTY,
+			        hwmCountyName: feature.attributes.COUNTY
+		        };
+	        });
+			hwmCountyFilterValues.unshift( new Object ({ id: "All", hwmCountyName: "All"}));
+			hwmCountyStore = new Memory({data: hwmCountyFilterValues});
+			var hwmCountyInput = new FilteringSelect({
+			  	id: "hwmCountySelector",
+			  	name: "hwmCounty",
+			  	store: hwmCountyStore,
+			  	required: false,
+			  	ignoreCase: true,
+			  	fetchProperties: {sort:[{attribute:'hwmCountyName', descending:false}]},
+			  	searchAttr: "hwmCountyName",
+			  	onChange: function (){
+			  		filterHWMs();
+			  	}	
+	   	    }, "hwmCountySelector");
+	        hwmCountyInput.startup();
+		});
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		//begin executeSensorFilter function 
+		var executeFilterHandler = on(dom.byId("submitButton"), "click", function(){ 
+
+			sensorsLayer.setDisableClientCaching(true);
+			sensorsLayer.setLayerDefinitions(filterDefinition);
+			sensorsLayer.refresh();
+			sensorsLayer.setVisibility(true);
+			
+			selectionQueryTask = new QueryTask(mapServicesRoot + "/Sensors/MapServer/0");
+			selectionQuery = new Query();
+
+			selectionQuery.returnGeometry = true;
+			selectionQuery.where = filterDefinition[0];
+
+			selectionQueryTask.execute(selectionQuery,onQueryComplete);
+
+			function onQueryComplete (results){
+
+				var selectionExtent = new graphicsUtils.graphicsExtent(results.features);
+
+				if (results.features.length > 1){
+					map.setExtent(selectionExtent, true);
+				} else {
+					//Zoom to the location of the single returned feature's geometry
+					var singleSiteGraphic = results.features[0];
+					var location = new Point(singleSiteGraphic.geometry.x, singleSiteGraphic.geometry.y, map.spatialReference);
+					map.centerAndZoom(location, 15);
+				}
+			}
+				
+			noRecordsQueryTask = new QueryTask(mapServicesRoot + "/Sensors/MapServer/0");
+			noRecordsQuery = new Query();
+			
+			noRecordsQuery.where = filterDefinition[0];
+
+			if (filterDefinition[0] !== "") {
+			noRecordsQueryTask.executeForCount(noRecordsQuery, function (count){ 
+				//alert("Your filter selection returned " + count + " sites.");
+				filterCount = count;
+				console.log("Site selection returned "+ count + " results");
+				
+				displayFilterCount();
+			});
+			
+			}
+			console.log("layer definition updated, executed, and extent refreshed");
+		});
+		//end executeSensorFilter function
+
+		//begin executeHWMFilter function
+		var executeHWMFilterHandler = on(dom.byId("hwmSubmitButton"), "click", function () {
+
+			hwmFilterLyr.setDisableClientCaching(true);
+			hwmFilterLyr.setLayerDefinitions(filterDefinition);
+			hwmFilterLyr.refresh();
+			hwmFilterLyr.setVisibility(true);
+
+			selectionQueryTask = new QueryTask(mapServicesRoot + "/HWMs_forFilter/MapServer/0");
+			selectionQuery = new Query();
+
+			selectionQuery.returnGeometry = true;
+			selectionQuery.where = filterDefinition[0];
+
+			selectionQueryTask.execute(selectionQuery,onQueryComplete);
+
+			function onQueryComplete (results){
+
+				var selectionExtent = new graphicsUtils.graphicsExtent(results.features);
+
+				if (results.features.length > 1){
+
+					selectionExtent = selectionExtent.expand(2.3);
+					map.setExtent(selectionExtent, true);
+
+				} else {
+					//Zoom to the location of the single returned feature's geometry
+					var singleSiteGraphic = results.features[0];
+					var location = new Point(singleSiteGraphic.geometry.x, singleSiteGraphic.geometry.y, map.spatialReference);
+					map.centerAndZoom(location, 15);
+				}
+			}
+				
+			noRecordsQueryTask = new QueryTask(mapServicesRoot + "/HWMs/MapServer/0");
+			noRecordsQuery = new Query();
+			
+			noRecordsQuery.where = filterDefinition[0];
+
+			if (filterDefinition[0] !== "") {
+			noRecordsQueryTask.executeForCount(noRecordsQuery, function (count){ 
+				//alert("Your filter selection returned " + count + " sites.");
+				filterCount = count;
+				console.log(count);
+				
+				displayFilterCount();
+			});
+			
+			}
+			console.log("layer definition updated, executed, and extent refreshed");
+		});
+		//end executeHWMFilters function
+
+		//build query task
+	    var queryTask = new QueryTask(mapServicesRoot + "/Sites/MapServer/0");
+		//build query filter
+	    var siteIDquery = new Query();
+	    siteIDquery.returnGeometry = true;
+	    siteIDquery.outFields = ["SITE_ID"];
 		
+		//pass the url parameters for site
+		var urlSiteObject = urlUtils.urlToObject(document.location.href);
+		
+		if (urlSiteObject.query){
+
+			var siteid;
+			
+			if (urlSiteObject.query.siteid)
+				{ siteid = urlSiteObject.query.siteid; }
+			if (urlSiteObject.query.lat && urlSiteObject.query.lng ){ 
+			
+				lat = urlSiteObject.query.lat; 
+				lng = urlSiteObject.query.lng; 
+				
+				var zoomPoint = new Point(lng,lat);
+				var convertedPoint = new webMercatorUtils.geographicToWebMercator(zoomPoint);
+				
+				var pointSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_X, 15, 
+					new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 2.5), 
+					new Color([0,255,0,0.25]));
+				//var pointSymbol = new esri.symbol.PictureMarkerSymbol('images/marieFaceSym.gif', 50, 50);
+				var pointGraphic = new Graphic();
+				pointGraphic.geometry = convertedPoint;
+				pointGraphic.symbol = pointSymbol;
+				map.graphics.clear();
+				map.graphics.add(pointGraphic);
+				map.centerAndZoom(zoomPoint, 15);
+			
+				//Refresh the URL with the currently selected parcel
+				window.history.pushState(null,null,"?lat=" + lat + "&lng=" + lng);
+				
+			}
+
+		//set query based on the parameters
+		var idParam = "SITE_ID = '" + siteid + "'";
+		siteIDquery.where = idParam;
+		//execute query and call showSiteResults on completion
+		queryTask.execute(siteIDquery,showSiteResults);
 		}
-		console.log("layer definition updated, executed, and extent refreshed");
-	});
-	//end executeHWMFilters function
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
+	});/////end require
+	
 	//begin toggleCreateMode
 	function toggleCreateMode () {
 		
@@ -1359,56 +1397,19 @@ require([
 			//end of else statement
 		});
 		//end of on click for map
-		//build query task
-	    var queryTask = new QueryTask(mapServicesRoot + "/Sites/MapServer/0");
-		//build query filter
-	    var siteIDquery = new Query();
-	    siteIDquery.returnGeometry = true;
-	    siteIDquery.outFields = ["SITE_ID"];
-		
-		//pass the url parameters for site
-		var urlSiteObject = urlUtils.urlToObject(document.location.href);
-		
-			if (urlSiteObject.query){
 
-				var siteid;
-				
-				if (urlSiteObject.query.siteid)
-					{ siteid = urlSiteObject.query.siteid; }
-				if (urlSiteObject.query.lat && urlSiteObject.query.lng ){ 
-				
-					lat = urlSiteObject.query.lat; 
-					lng = urlSiteObject.query.lng; 
-					
-					var zoomPoint = new Point(lng,lat);
-					var convertedPoint = new webMercatorUtils.geographicToWebMercator(zoomPoint);
-					
-					var pointSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_X, 15, 
-						new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 2.5), 
-						new Color([0,255,0,0.25]));
 
-					//var pointSymbol = new esri.symbol.PictureMarkerSymbol('images/marieFaceSym.gif', 50, 50);
-					
-					var pointGraphic = new Graphic();
-					pointGraphic.geometry = convertedPoint;
-					pointGraphic.symbol = pointSymbol;
-					map.graphics.clear();
-					map.graphics.add(pointGraphic);
-					map.centerAndZoom(zoomPoint, 15);
+		on(map, "update-end", function () {
+				domStyle.set('loadingScreen', 'visibility', 'hidden');
 				
-					//Refresh the URL with the currently selected parcel
-					window.history.pushState(null,null,"?lat=" + lat + "&lng=" + lng);
-					
-				}
-
-			//set query based on the parameters
-			var idParam = "SITE_ID = '" + siteid + "'";
-			siteIDquery.where = idParam;
-		
-			//execute query and call showSiteResults on completion
-			queryTask.execute(siteIDquery,showSiteResults);
-		
-			}
+				on(map, "update-start", function () {
+					domStyle.set('refreshScreen', 'visibility', 'visible');
+				});
+				
+				on(map, "update-end", function () {
+					domStyle.set('refreshScreen', 'visibility', 'hidden');
+				});
+			});
 		
 		// domStyle.set('loadingScreen', 'opacity', '0.75');
 		// var loadingUpdate = on(map, "update-start", function() { 
