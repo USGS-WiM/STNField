@@ -7,84 +7,76 @@
 	Author: Jon Baier USGS Wisconsin Internet Mapping
 	Created: Novemeber 06, 2012	
 */
-define([
-	"dojo/_base/declare",
-	"dijit/_WidgetBase",
-	"dijit/_TemplatedMixin",
-	"dijit/_OnDijitClickMixin",
-	"dojo/fx",
-	"dijit/_Container",
-	"dojo/dom-construct",
-	"dojo/dom-style",
-	"dojo/parser",
-	"dojo/ready",
-	"dojo/text!./templates/CollapsingContainer.html"
-], function(
-	declare,
-	_WidgetBase, 
-	_TemplatedMixin,
-	_OnDijitClickMixin,
-	coreFx,
-	_Container,
-	domConstruct,
-	domStyle,
-	parser,
-	ready,
-	template
-) {
-     return declare( "wim/CollapsingContainer", [_WidgetBase, _TemplatedMixin], {
+dojo.provide("wim.CollapsingContainer");
 
-     	templateString: template,
-     	//declaredClass: "wim/CollapsingContainer",
-     	baseClass: "collapsingContainer",
-		titleImageUrl: null,
-		startCollapsed: false,
+dojo.require("dijit._Container");
+dojo.require("dijit._TemplatedMixin");
+dojo.require("dijit._OnDijitClickMixin");
+dojo.require("dijit._WidgetBase");
+dojo.require("dojo.fx");
 
-	    getContentNode: function() {
-		return this.containerNode;
-		},
+
+dojo.declare("wim.CollapsingContainer", [ dijit._WidgetBase, dijit._OnDijitClickMixin, dijit._Container, dijit._TemplatedMixin ],
+{
+	templatePath: dojo.moduleUrl("wim","templates/CollapsingContainer.html"),
 	
-		constructor: function() {
-			//add here anything that will be executed in the widget initialization.
-			console.log("collapsingContainer wijit created");
-			
-		},	
-			
-		//new iconClick handler
-		_onIconClick: function() {
-			if (domStyle.get(this.containerNode, "display") == "none") {
-				coreFx.wipeIn({ node: this.containerNode, duration: 300}).play(); //Animate show content
-				
-			} else {
-				 coreFx.wipeOut({node: this.containerNode, duration: 300}).play(); // Animate hide content
-				  
-			}
-		},	
+	/* Define your component custom attributes here ... */
+	baseClass: "collapsingContainer",
+	title: "coolContainer",
+	titleImageUrl: null,
+	startCollapsed: false,
+	
+	getContentNode: function() {
+		return this.containerNode;
+	},
+	
+	constructor: function() {
+		//add here anything that will be executed in the widget initialization.
 		
-		postCreate: function(){
-			this.titleNode.innerHTML = this.title;
+	},	
 		
-			// add here anything that will be executed in after the DOM is loaded and ready.
-			// For example, adding events on the dojo attach points is suitable here.	
-			var localTitle = this.title;
-					
-			// Attach an onclick event on the user name node.		
-			/*dojo.connect(this.nameNode, "onclick", function (event) {
-				alert("The selected name is: " + localTitle);
-			});	*/
+		
+	//new iconClick handler
+	_onIconClick: function() {
+		if (dojo.getStyle(this.containerNode, "display") == "none") {
+			dojo.fx.wipeIn({ node: this.containerNode, duration: 300}).play(); //Animate show content
 			
-			if (this.titleImageUrl != null) {
-				//Do something here to handle unique images to put before titles
-			}
-
-
-			if (this.startCollapsed == true) {
-				this._onIconClick();
-			}
+		} else {
+			  dojo.fx.wipeOut({node: this.containerNode, duration: 300}).play(); // Animate hide content
+			  
 		}
-     });
+	},	
+	
+	
+	//	OLD an onClick handler
+	/*_onIconClick: function(){
+		if (dojo.getStyle("collapsingContainerContent", "display") == "none") {
+			  dojo.setStyle("collapsingContainerContent", "display", "block"); // Show content			
+		} else {
+			  dojo.setStyle("collapsingContainerContent", "display", "none"); // Hide content
+		}
+	},*/
 
-	ready(98, function() {
-		parser.parse();
-	})
+	postCreate: function(){
+		this.titleNode.innerHTML = this.title;
+	
+		// add here anything that will be executed in after the DOM is loaded and ready.
+		// For example, adding events on the dojo attach points is suitable here.	
+		var localTitle = this.title;
+				
+		// Attach an onclick event on the user name node.		
+		/*dojo.connect(this.nameNode, "onclick", function (event) {
+			alert("The selected name is: " + localTitle);
+		});	*/
+		
+		if (this.titleImageUrl != null) {
+			//Do something here to handle unique images to put before titles
+		}
+
+
+		if (this.startCollapsed == true) {
+			this._onIconClick();
+		}
+	}
+	
 });

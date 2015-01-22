@@ -6,49 +6,29 @@
 	Created: March, 11 2013
 */
 
-define([
-	"dojo/_base/declare",
-	"dijit/_WidgetBase",
-	"dijit/_TemplatedMixin",
-	"dijit/_Container",
-	"dojo/dom",
-	"dojo/dom-construct",
-	"dojo/dom-style",
-	"dojo/ready",
-	"dojo/parser",
-	"dojo/text!./templates/RefreshScreen.html"
-], function(
-	declare,
-	_WidgetBase, 
-	_TemplatedMixin,
-	_Container,
-	dom,
-	domConstruct,
-	domStyle,
-	ready,
-	parser,
-	template
-) {
-     return declare ( "wim/RefreshScreen", [_WidgetBase, _TemplatedMixin], {
+dojo.provide("wim.RefreshScreen");
 
-	    templateString: template,
-	    baseClass: "refreshScreen",
-	    attachedMapID: null,
+dojo.require("dijit._Container");
+dojo.require("dijit._TemplatedMixin");
+dojo.require("dijit._WidgetBase");
+
+dojo.declare("wim.RefreshScreen", [dijit._WidgetBase, dijit._Container, dijit._TemplatedMixin],
+{
+    templatePath: dojo.moduleUrl("wim", "templates/RefreshScreen.html"),
+
+    baseClass: "refreshScreen",
+    attachedMapID: null,
 	
-		constructor: function(){
-			domConstruct.create('img', {
-					id: 'refreshScreenGraphic',
-					src: 'images/loading_black.gif'
-				}, dom.byId('refreshScreen')
-			);
-		},
-		
-		postCreate: function() {
-			domStyle.set(this.id, 'visibility', 'hidden');
-		} 	
-     });
-
-     ready(function(){
-     	parser.parse();
-     });
+	constructor: function(){
+		//dojo.style('refreshScreen', 'visibility', 'hidden');
+		dojo.create('img', {
+				id: 'refreshScreenGraphic',
+				src: 'images/loading_black.gif'
+			}, dojo.byId('refreshScreen')
+		);
+	},
+	
+	postCreate: function() {
+		dojo.style(this.id, 'visibility', 'hidden');
+	}
 });

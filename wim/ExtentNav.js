@@ -1,72 +1,55 @@
 
-define([
-  "dojo/_base/declare",
-  "dijit/_WidgetBase",
-  "dijit/_TemplatedMixin",
-  "dijit/_OnDijitClickMixin",
-  "dijit/_Container",
-  "dojo/on",
-  "dojo/dom",
-  "dijit/registry",
-  "dojo/dom-construct",
-  "dojo/ready",
-  "dojo/parser",
-  "dojo/text!./templates/ExtentNav.html"
-], function(
-  declare,
-  _WidgetBase,
-  _TemplatedMixin,
-  _OnDijitClickMixin,
-  _Container,
-  on,
-  dom,
-  registry,
-  domConstruct,
-  ready,
-  parser,
-  template
-) {
+/*
+	Copyright: 2012 WiM - USGS
+	Author: Blake Draper, USGS Wisconsin Internet Mapping
+	Created: December 7, 2012
+*/
 
-    return declare( "wim/ExtentNav", [_WidgetBase, _TemplatedMixin, _OnDijitClickMixin], {
+dojo.provide("wim.ExtentNav");
 
-      templateString: template,
-      //declaredClass: "wim/ExtentNav",
-      baseClass: "extentNav",
-      attachedMapID: null,
-      initExtent: null,
+dojo.require("dijit._Container");
+dojo.require("dijit._TemplatedMixin");
+dojo.require("dijit._WidgetBase");
+dojo.require("dijit._OnDijitClickMixin");
 
-      constructor: function() {
+dojo.require("esri.map");
+dojo.require("esri.toolbars.navigation");
 
-        console.log("extentNav wimjit created");
-      },
+dojo.declare("wim.ExtentNav", [dijit._WidgetBase, dijit._OnDijitClickMixin, dijit._Container, dijit._TemplatedMixin], 
+{
+  templatePath: dojo.moduleUrl("wim", "templates/ExtentNav.html"),
   
-      postCreate: function() {
-
-        // on(navToolbar, "extent-history-change", extentHistoryChangeHandler);
-        
-        // function extentHistoryChangeHandler() {
-        //   registry.byId("back").disabled = navToolbar.isFirstExtent(dom.byId(map));
-        //   registry.byId("fwd").disabled = navToolbar.isLastExtent(dom.byId(map));
-        // }    
-      },
-       
-      _onBackClick: function() {
-        navToolbar.zoomToPrevExtent();
-      },
-      
-      _onFwdClick: function () {
-        navToolbar.zoomToNextExtent();
-      },
-      
-      _onFullClick: function () {
-       map.setExtent(this.initExtent); 
-      }
-
-
-    });
-
-    ready( 1000, function() {
-      parser.parse();
-    })
-
+  baseClass: "extentNav",  
+  attachedMapID : null,
+  initExtent: null,
+  
+  constructor: function (){
+	  
+  },
+  
+  postCreate: function () {
+	  
+	  dojo.connect(navToolbar, "onExtentHistoryChange", extentHistoryChangeHandler);
+	  
+	  function extentHistoryChangeHandler() {
+        dijit.byId("back").disabled = navToolbar.isFirstExtent(dojo.byId(map));
+        dijit.byId("fwd").disabled = navToolbar.isLastExtent(dojo.byId(map));
+      }	
+	  
+   },
+   
+		
+  _onBackClick: function() {
+		navToolbar.zoomToPrevExtent();
+  },
+  
+  _onFwdClick: function () {
+	  navToolbar.zoomToNextExtent();
+  },
+  
+  _onFullClick: function () {
+	 map.setExtent(this.initExtent);
+	 
+  }
+  
 });
