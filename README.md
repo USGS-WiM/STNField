@@ -9,15 +9,15 @@ Code base for the STN Field map, aka, the map in the map tab of STNWeb.
 Please turn on and turn off (using checkboxes) each layer. Some layers only appear at a certain scale level. Those are indicated by the magnifying glass icon.    Click the magnifying glass for each layer that has one to automatically zoom to that level. The icon does not have a zoom-to-extent function, only scale. For most of the layers, it is bets to test in an area with data, like coastal Florida. You still may have to pan around to see data. 
 
 ####Features to click
-The following layers have a built in action triggered by a click. Please try each:
+**The following layers have a built in action triggered by a click on a feature. Please try each:**
 
-STN Sites: should return a large tabbed popup with Site details and buttons with other app functions
+**STN Sites:** should return a large tabbed popup with Site details and buttons with other app functions
 
-AHPS Gages: should show a large popup with a hydrograph
+**AHPS Gages:** should show a large popup with a hydrograph
 
-Real-Time NWIS sites: should show a large popup with a hydrograph 
+**Real-Time NWIS sites:** should show a large popup with a hydrograph 
 
-NWS Watches and Warnings: popup with alert info and link to full text
+**NWS Watches and Warnings:** popup with alert info and link to full text
 
 
 #### Sensor Filter
