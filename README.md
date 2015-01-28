@@ -1,24 +1,23 @@
 # STNField
-code base for the STN Field map
+Code base for the STN Field map, aka, the map in the map tab of STNWeb.
 
-There are many different ways to style code with GitHub's markdown. If you have inline code blocks, wrap them in backticks: `var example = true`.  If you've got a longer block of code, you can indent with four spaces:
 
-    if (isAwesome){
-      return true
-    }
+##Testing/QA/QC 
 
-GitHub also supports something called code fencing, which allows for multiple lines without indentation:
+###The Layers
+ 
+Please turn on and turn off (using checkboxes) each layer. Some layers only appear at a certain scale level. Those are indicated by the magnifying glass icon.    Click the magnifying glass for each layer that has one to automatically zoom to that level. The icon does not have a zoom-to-extent function, only scale. For most of the layers, it is bets to test in an area with data, like coastal Florida. You still may have to pan around to see data. 
 
-```
-if (isAwesome){
-  return true
-}
-```
+###Features to click
+The following layers have a built in action triggered by a click. Please try each:
 
-And if you'd like to use syntax highlighting, include the language:
+STN Sites: should return a large tabbed popup with Site details and buttons with other app functions
+AHPS Gages: should show a large popup with a hydrograph
+Real-Time NWIS sites: should show a large popup with a hydrograph 
+NWS Watches and Warnings: popup with alert info and link to full text
 
-```javascript
-if (isAwesome){
-  return true
-}
-```
+
+### Sensor Filter
+
+Try a few filter combinations using the Sensor Filter section. The sites that match the filter will be highlighted by a yellow diamond. The extent of the map should also reset to the sites returned. A filter with no results will show no highlighted sites and the extent will not change. 
+
