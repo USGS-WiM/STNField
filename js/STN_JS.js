@@ -75,7 +75,7 @@ var filterCount;
 
 var evt;
 
-var nwisFeatureLyr;
+//var nwisFeatureLyr;
 
 var currentRadParCheck;
 
@@ -100,13 +100,13 @@ function init() {
 	selectionSymbol: new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_CIRCLE, new dojo.Color([255,0,0]))}, dojo.create("div"));
    
 	map = new esri.Map("map", {
-    	basemap: "streets",
+    	basemap: "topo",
 		wrapAround180: true,
 		extent: new esri.geometry.Extent({"xmin":-14284551.845930014,"ymin":2700367.3352579884,"xmax":-7240115.31917005,"ymax":6750918.338144969,"spatialReference":{wkid:3857}}),
         infoWindow: popup,
 		slider: true,
 		sliderStyle: "large", //use "small" for compact version
-		logo:true
+		logo:false
 	});
 	
     navToolbar = new esri.toolbars.Navigation(map);
@@ -127,8 +127,7 @@ function init() {
 		console.log("check");
 		
 	});
-	
-	
+
 	//end allLayers object
 	//dojo.connect(map, "onClick", executeSiteIdentifyTask);
   	sensorsLayer = new esri.layers.ArcGISDynamicMapServiceLayer(mapServicesRoot + "/Sensors/MapServer", {"visible":false });
@@ -137,8 +136,7 @@ function init() {
     hwmFilterLyr = new esri.layers.ArcGISDynamicMapServiceLayer(mapServicesRoot + "/HWMs_forFilter/MapServer", {"visible":false });
     hwmFilterLyr.setDisableClientCaching(true);
 
-
-    nwisFeatureLyr = new esri.layers.FeatureLayer(mapServicesRoot + "/STN_nwis_rt/MapServer/0", { mode: esri.layers.FeatureLayer.MODE_ONDEMAND, opacity: 0, minScale: 1155582, visible: false, outFields: ["*"]});
+    //nwisFeatureLyr = new esri.layers.FeatureLayer(mapServicesRoot + "/STN_nwis_rt/MapServer/0", { mode: esri.layers.FeatureLayer.MODE_ONDEMAND, opacity: 0, minScale: 1155582, visible: false, outFields: ["*"]});
 
 	///////begin existing dropdown populate code
 	var eventList = new esri.layers.FeatureLayer(mapServicesRoot + "/Sensors/MapServer/3", { mode: esri.layers.FeatureLayer.MODE_ONDEMAND, outFields: ["*"]});
@@ -181,10 +179,9 @@ function init() {
    		'NHC_TRACK_PT_72DATE','NHC_TRACK_PT_120DATE','NHC_TRACK_PT_0NAMEDATE', 'NHC_TRACK_PT_MSLPLABELS',
    		'NHC_TRACK_PT_72WLBL','NHC_TRACK_PT_120WLBL','NHC_TRACK_PT_72CAT','NHC_TRACK_PT_120CAT']
    });
-
-   map.addLayers([noaaConeTrackLyr, nwisFeatureLyr]);
-   //////end testing code
-
+   // map.addLayers([noaaConeTrackLyr, nwisFeatureLyr]);
+   //////line above disabled because nwisFeatureLyr is causing basemaps to not load on init
+	map.addLayers([noaaConeTrackLyr]);
 
 	////begin code for single dropdown based on list from table in service
 	var eventQuery = new esri.tasks.Query();
@@ -1066,47 +1063,47 @@ function mapReady(map){
 	//Just uses a simple div with id "latLngScaleBar" to contain it
 	var latLngBar = new wim.LatLngScale({map: map}, 'latLngScaleBar');
 
-	dojo.connect(nwisFeatureLyr, "onMouseOut", function() {map.infoWindow.hide();} );
-
-	dojo.connect(nwisFeatureLyr, "onMouseOver", function(evt) {
-
-		var identifyNWIS = new esri.tasks.IdentifyTask(mapServicesRoot + "/STN_nwis_rt/MapServer");
-					
-			identifyParams = new esri.tasks.IdentifyParameters();
-			identifyParams.tolerance = 5;
-			identifyParams.returnGeometry = true;
-			identifyParams.layerIds = [0];
-			identifyParams.layerOption = esri.tasks.IdentifyParameters.LAYER_OPTION_TOP;
-			identifyParams.width = map.width;
-			identifyParams.height = map.height;
-			identifyParams.geometry = evt.mapPoint;
-			identifyParams.mapExtent = map.extent;
-
-			identifyNWIS.execute(identifyParams, function(identifyResults){ 
-	
-				var gageNO = identifyResults[0].feature.attributes.Name;
-
-				map.infoWindow.setTitle("NWIS Real-Time Layer");
-				map.infoWindow.setContent(
-					"<b>USGS gage ID: </b>" + gageNO
-
-					);
-				map.infoWindow.show(evt.mapPoint,map.getInfoWindowAnchor(evt.screenPoint));
-			});
-
-	})
+	//dojo.connect(nwisFeatureLyr, "onMouseOut", function() {map.infoWindow.hide();} );
+    //
+	//dojo.connect(nwisFeatureLyr, "onMouseOver", function(evt) {
+    //
+	//	var identifyNWIS = new esri.tasks.IdentifyTask(mapServicesRoot + "/STN_nwis_rt/MapServer");
+	//
+	//		identifyParams = new esri.tasks.IdentifyParameters();
+	//		identifyParams.tolerance = 5;
+	//		identifyParams.returnGeometry = true;
+	//		identifyParams.layerIds = [0];
+	//		identifyParams.layerOption = esri.tasks.IdentifyParameters.LAYER_OPTION_TOP;
+	//		identifyParams.width = map.width;
+	//		identifyParams.height = map.height;
+	//		identifyParams.geometry = evt.mapPoint;
+	//		identifyParams.mapExtent = map.extent;
+    //
+	//		identifyNWIS.execute(identifyParams, function(identifyResults){
+	//
+	//			var gageNO = identifyResults[0].feature.attributes.Name;
+    //
+	//			map.infoWindow.setTitle("NWIS Real-Time Layer");
+	//			map.infoWindow.setContent(
+	//				"<b>USGS gage ID: </b>" + gageNO
+    //
+	//				);
+	//			map.infoWindow.show(evt.mapPoint,map.getInfoWindowAnchor(evt.screenPoint));
+	//		});
+    //
+	//})
 
 	//toggles visibility of feature layer used for hover ability by tying it to visibility of the nwis dynamic layer
-	dojo.connect(layersObject[14].layer, "onVisibilityChange", function(nwisLyrVisibility) {
-
-		if (nwisLyrVisibility) {
-			nwisFeatureLyr.setVisibility(true)
-		} else {
-			nwisFeatureLyr.setVisibility(false)
-		}
-
-
-	});
+	//dojo.connect(layersObject[14].layer, "onVisibilityChange", function(nwisLyrVisibility) {
+    //
+	//	if (nwisLyrVisibility) {
+	//		nwisFeatureLyr.setVisibility(true)
+	//	} else {
+	//		nwisFeatureLyr.setVisibility(false)
+	//	}
+    //
+    //
+	//});
 
 	dojo.connect(map, "onClick", function(evt) {
 		
