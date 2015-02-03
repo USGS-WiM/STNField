@@ -24,6 +24,8 @@ Please turn on and turn off (using checkboxes) each layer. Some layers only appe
 
 Try a few filter combinations using the Sensor Filter section. The sites that match the filter will be highlighted by a yellow diamond. The extent of the map should also reset to the sites returned. A filter with no results will show no highlighted sites and the extent will not change. 
 
+After creating a sucessful filter, click the Clear Selection button to remove your filter and revert to the initial map extent. 
+
 #### HWM Filter
 
 Try a few filter combinations using the HWM Filter section. The HWMs that match the filter will be highlighted by a yellow diamond and labeled as a HWM.  The extent of the map should also reset to the HWMs returned. A filter with no results will show no highlighted HWMs and the extent will not change. 
