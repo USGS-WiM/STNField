@@ -30,6 +30,8 @@ After creating a sucessful filter, click the Clear Selection button to remove yo
 
 Try a few filter combinations using the HWM Filter section. The HWMs that match the filter will be highlighted by a yellow diamond and labeled as a HWM.  The extent of the map should also reset to the HWMs returned. A filter with no results will show no highlighted HWMs and the extent will not change. 
 
+After creating a sucessful filter, click the Clear Selection button to remove your filter and revert to the initial map extent. 
+
 ####Extent Navigation
 
 On the top left you will see some extent and scale navigation tools. Test the zoom slider to be sure it zooms the map extent in and out. Try this both by clicking and dragging the handle up and down, and also by clicking the controls at the top and bottom of the slider. 
