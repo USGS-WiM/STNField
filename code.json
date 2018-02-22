@@ -4,7 +4,7 @@
     "organization": "U.S. Geological Survey",
     "description": "Original map within the origin stnweb in the map tab",
     "version": "v0.0.0",
-    "status": "Archival"
+    "status": "Archival",
 
     "permissions": {
       "usageType": "openSource",
